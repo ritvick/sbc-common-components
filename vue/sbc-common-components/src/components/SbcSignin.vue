@@ -56,56 +56,51 @@ export default class SbcSignin extends NavigationMixin {
   private async mounted () {
     getModule(AccountModule, this.$store)
     // Initialize keycloak session
-    const kcInit = await KeyCloakService.initializeKeyCloak(this.idpHint, this.$store)
-    await new Promise((resolve, reject) => {
-      kcInit.success(async (authenticated: boolean) => {
-        if (authenticated) {
-          // eslint-disable-next-line no-console
-          console.info('[SignIn.vue]Logged in User. Init Session and Starting refreshTimer')
-          // Set values to session storage
-          await KeyCloakService.initSession()
-          // tell KeycloakServices to load the user info
-          const userInfo = await this.loadUserInfo()
+    const kcInit = KeyCloakService.initializeKeyCloak(this.idpHint, this.$store)
+    kcInit.then(async (authenticated: boolean) => {
+      if (authenticated) {
+        // eslint-disable-next-line no-console
+        console.info('[SignIn.vue]Logged in User. Init Session and Starting refreshTimer')
+        // Set values to session storage
+        await KeyCloakService.initSession()
+        // tell KeycloakServices to load the user info
+        const userInfo = await this.loadUserInfo()
 
-          // update user profile
-          await this.updateUserProfile()
+        // update user profile
+        await this.updateUserProfile()
 
-          // sync the account if there is one
-          await this.syncAccount()
+        // sync the account if there is one
+        await this.syncAccount()
 
-          // if not from the sbc-auth, do the checks and redirect to sbc-auth
-          if (!this.inAuth) {
-            // redirect to create account page if the user has no 'account holder' role
-            const isRedirectToCreateAccount = (userInfo.roles.includes(Role.PublicUser) && !userInfo.roles.includes(Role.AccountHolder))
+        // if not from the sbc-auth, do the checks and redirect to sbc-auth
+        if (!this.inAuth) {
+          // redirect to create account page if the user has no 'account holder' role
+          const isRedirectToCreateAccount = (userInfo.roles.includes(Role.PublicUser) && !userInfo.roles.includes(Role.AccountHolder))
 
-            const currentUser = await this.getCurrentUserProfile(this.inAuth)
+          const currentUser = await this.getCurrentUserProfile(this.inAuth)
 
-            if ((userInfo?.loginSource !== LoginSource.IDIR) && !(currentUser?.userTerms?.isTermsOfUseAccepted)) {
-              console.log('[SignIn.vue]Redirecting. TOS not accepted')
-              this.redirectToPath(this.inAuth, Pages.USER_PROFILE_TERMS)
-            } else if (isRedirectToCreateAccount) {
-              console.log('[SignIn.vue]Redirecting. No Valid Role')
-              switch (userInfo.loginSource) {
-                case LoginSource.BCSC:
-                  this.redirectToPath(this.inAuth, Pages.CREATE_ACCOUNT)
-                  break
-                case LoginSource.BCEID:
-                  this.redirectToPath(this.inAuth, Pages.CHOOSE_AUTH_METHOD)
-                  break
-              }
+          if ((userInfo?.loginSource !== LoginSource.IDIR) && !(currentUser?.userTerms?.isTermsOfUseAccepted)) {
+            console.log('[SignIn.vue]Redirecting. TOS not accepted')
+            this.redirectToPath(this.inAuth, Pages.USER_PROFILE_TERMS)
+          } else if (isRedirectToCreateAccount) {
+            console.log('[SignIn.vue]Redirecting. No Valid Role')
+            switch (userInfo.loginSource) {
+              case LoginSource.BCSC:
+                this.redirectToPath(this.inAuth, Pages.CREATE_ACCOUNT)
+                break
+              case LoginSource.BCEID:
+                this.redirectToPath(this.inAuth, Pages.CHOOSE_AUTH_METHOD)
+                break
             }
           }
-
-          this.$emit('sync-user-profile-ready')
-
-          resolve()
         }
-      })
-        .error(() => {
-          if (this.redirectUrlLoginFail) {
-            window.location.assign(decodeURIComponent(this.redirectUrlLoginFail))
-          }
-        })
+
+        this.$emit('sync-user-profile-ready')
+      }
+    }).catch(() => {
+      if (this.redirectUrlLoginFail) {
+        window.location.assign(decodeURIComponent(this.redirectUrlLoginFail))
+      }
     })
   }
 }
