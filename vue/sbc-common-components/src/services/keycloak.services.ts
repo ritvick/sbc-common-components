@@ -52,7 +52,8 @@ class KeyCloakService {
       timeSkew: 0,
       token,
       refreshToken: ConfigHelper.getFromSession(SessionStorageKeys.KeyCloakRefreshToken) || undefined,
-      idToken: ConfigHelper.getFromSession(SessionStorageKeys.KeyCloakIdToken) || undefined
+      idToken: ConfigHelper.getFromSession(SessionStorageKeys.KeyCloakIdToken) || undefined,
+      pkceMethod: 'S256'
     }
     return this.kc.init(kcOptions)
   }
