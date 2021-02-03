@@ -68,57 +68,97 @@
 
         <!-- Notifications -->
         <v-menu
-          fixed
-          bottom
           left
+          bottom
+          max-width="380"
           transition="slide-y-transition"
           attach="#appHeader"
           v-if="isAuthenticated"
         >
-          <template v-slot:activator="{ on }">
-            <v-btn
-              text
-              dark
-              large
-              class="mobile-icon-only mx-1 px-2"
-              aria-label="notifications"
-              v-on="on"
-            >
-              <v-icon>
-                mdi-bell-outline
-              </v-icon>
+            <template v-slot:activator="{ on }">
               <v-badge
-                dot
                 overlap
-                offset-y="-5"
-                offset-x="10"
                 color="error"
-                v-if="pendingApprovalCount > 0"
+                content="2"
+                offset-y="18"
+                offset-x="11"
+                class="mr-6 font-weight-bold"
               >
+              <v-btn
+                large
+                icon
+                dark
+                text
+                aria-label="Notifications"
+                v-on="on"
+              >
+                <v-icon>
+                  mdi-bell
+                </v-icon>
+                <!-- <v-badge
+                  dot
+                  overlap
+                  offset-y="-5"
+                  offset-x="10"
+                  color="error"
+                  v-if="pendingApprovalCount > 0"
+                >
+                </v-badge> -->
+              </v-btn>
               </v-badge>
-              <span>
-                Notifications
-              </span>
-              <v-icon class="ml-1">
-                mdi-menu-down
-              </v-icon>
-            </v-btn>
-          </template>
+            </template>
           <v-card>
-            <div class="menu-header">
-              <v-card-title class="body-1">
-                Notifications
-              </v-card-title>
-              <v-divider></v-divider>
-            </div>
+            <v-card-title class="body-1 font-weight-bold">
+              Notifications
+            </v-card-title>
+            <v-divider></v-divider>
             <v-list
-              tile
               dense
+              tile
+              three-line
             >
-              <!-- No Items -->
-              <v-list-item v-if="pendingApprovalCount === 0">
-                <v-list-item-title class="text-center">No notifications</v-list-item-title>
+
+              <!-- Prototype Notifications -->
+              <v-list-item class="align--top">
+                <v-list-item-content>
+                  <v-list-item-title>5 Transactions Remaining</v-list-item-title>
+                  <v-list-item-subtitle>You have 5 transactions remaining for February 2021.</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-list-item-action-text>Jan 31, 2020</v-list-item-action-text>
+                  <v-btn
+                    small
+                    icon
+                    aria-label="Delete Notification"
+                    class="mt-3 mb-n1"
+                  >
+                    <v-icon>mdi-trash-can-outline</v-icon>
+                  </v-btn>
+                </v-list-item-action>
               </v-list-item>
+              <v-divider class="my-2"></v-divider>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>3 Pending Approvals</v-list-item-title>
+                  <v-list-item-subtitle>3 team members require approval to access this account.</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-list-item-action-text>Jan 31, 2020</v-list-item-action-text>
+                  <v-btn
+                    small
+                    icon
+                    aria-label="Delete Notification"
+                    class="mt-3 mb-n1"
+                  >
+                    <v-icon>mdi-trash-can-outline</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+
+              <!-- No Items -->
+              <!-- <v-list-item v-if="pendingApprovalCount === 0">
+                <v-list-item-title class="text-center">No notifications</v-list-item-title>
+              </v-list-item> -->
 
               <v-list-item two-line v-if="pendingApprovalCount > 0" @click="goToTeamMembers()">
                 <v-list-item-content>
@@ -610,14 +650,14 @@ $app-header-font-color: #ffffff;
   }
 }
 
-.v-list {
-  border-radius: 0;
+// .v-list {
+//   border-radius: 0;
 
-  .v-list-item__title,
-  .v-list-item__subtitle {
-    line-height: normal !important;
-  }
-}
+//   .v-list-item__title,
+//   .v-list-item__subtitle {
+//     line-height: normal !important;
+//   }
+// }
 
 .v-list .v-list-item__title.user-name,
 .user-name {
@@ -645,10 +685,6 @@ $app-header-font-color: #ffffff;
 .v-subheader {
   color: $gray9 !important;
   font-weight: 700;
-}
-
-.menu-header {
-  display: none;
 }
 
 @media (max-width: 1263px) {
