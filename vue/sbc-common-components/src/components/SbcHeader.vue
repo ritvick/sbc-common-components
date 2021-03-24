@@ -348,7 +348,8 @@ declare module 'vuex' {
     }
   },
   components: {
-    SbcProductSelector
+    SbcProductSelector,
+    BrowserVersionAlert
   }
 })
 export default class SbcHeader extends Mixins(NavigationMixin) {
