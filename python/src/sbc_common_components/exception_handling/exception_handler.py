@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Function to handle all exceptions."""
-from flask import jsonify, Response
-from werkzeug.exceptions import HTTPException, default_exceptions
-
 from flask_jwt_oidc import AuthError
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.exceptions import HTTPException, default_exceptions
+
+RESPONSE_HEADERS = {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}
 
 
 class ExceptionHandler():
@@ -29,26 +29,17 @@ class ExceptionHandler():
 
     def auth_handler(self, error):  # pylint: disable=no-self-use
         """Handle AuthError."""
-        response: Response = jsonify(error.error)
-        response.status_code = error.status_code
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return error.error, error.status_code, RESPONSE_HEADERS
 
     def db_handler(self, error):  # pylint: disable=no-self-use
         """Handle Database error."""
-        response: Response = jsonify({'error': '{}'.format(error.__dict__['code']),
-                                      'message': '{}'.format(str(error.__dict__['orig']))})
-        response.status_code = error.status_code
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return {'error': '{}'.format(error.__dict__['code']),
+                'message': '{}'.format(str(error.__dict__['orig']))}, error.status_code, RESPONSE_HEADERS
 
     def std_handler(self, error):  # pylint: disable=no-self-use
         """Handle standard exception."""
-        message = error.message if hasattr(error, 'message') else error.description
-        response: Response = jsonify(message=message)
-        response.status_code = error.code if isinstance(error, HTTPException) else 500
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        message = dict(messaage=error.message if hasattr(error, 'message') else error.description)
+        return message, error.code if isinstance(error, HTTPException) else 500, RESPONSE_HEADERS
 
     def init_app(self, app):
         """Register common exceptons or errors."""
