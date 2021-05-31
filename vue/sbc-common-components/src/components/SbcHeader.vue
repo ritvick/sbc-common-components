@@ -455,14 +455,8 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
   }
 
   private goToCreateBCSCAccount () {
-    if (this.inAuth) {
-      this.$router.push(`/${Pages.CREATE_ACCOUNT}`)
-    } else {
-      // To send the navigateBackUrl to duplicate account creator interceptor screen, so that we can redirect to that page.
-      let redirectUrl = new URL(`${ConfigHelper.getAuthContextPath()}/${Pages.CREATE_ACCOUNT}`)
-      if (this.dashboardReturnUrl) redirectUrl.searchParams.append('redirectToUrl', encodeURIComponent(this.dashboardReturnUrl))
-      window.location.assign(redirectUrl.toString())
-    }
+    const redirectUrl: string = this.dashboardReturnUrl ? `${Pages.CREATE_ACCOUNT}?redirectToUrl=${encodeURIComponent(this.dashboardReturnUrl)}` : Pages.CREATE_ACCOUNT
+    this.redirectToPath(this.inAuth, redirectUrl)
   }
 
   private async goToAccountInfo (settings: UserSettings) {
