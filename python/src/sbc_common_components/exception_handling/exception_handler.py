@@ -15,6 +15,8 @@
 from flask_jwt_oidc import AuthError
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException, default_exceptions
+import logging
+logger = logging.getLogger('api-exceptions')
 
 RESPONSE_HEADERS = {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}
 
@@ -29,16 +31,19 @@ class ExceptionHandler():
 
     def auth_handler(self, error):  # pylint: disable=no-self-use
         """Handle AuthError."""
+        logger.exception(error)
         return error.error, error.status_code, RESPONSE_HEADERS
 
     def db_handler(self, error):  # pylint: disable=no-self-use
         """Handle Database error."""
+        logger.exception(error)
         return {'error': '{}'.format(error.__dict__['code']),
                 'message': '{}'.format(str(error.__dict__['orig']))}, error.status_code, RESPONSE_HEADERS
 
     def std_handler(self, error):  # pylint: disable=no-self-use
         """Handle standard exception."""
         message = dict(messaage=error.message if hasattr(error, 'message') else error.description)
+        logger.exception(error)
         return message, error.code if isinstance(error, HTTPException) else 500, RESPONSE_HEADERS
 
     def init_app(self, app):
