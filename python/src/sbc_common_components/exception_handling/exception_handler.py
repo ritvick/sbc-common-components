@@ -31,7 +31,7 @@ class ExceptionHandler():
 
     def auth_handler(self, error):  # pylint: disable=no-self-use
         """Handle AuthError."""
-        logger.exception(error)
+        logger.error(error.error)
         return error.error, error.status_code, RESPONSE_HEADERS
 
     def db_handler(self, error):  # pylint: disable=no-self-use
@@ -43,7 +43,10 @@ class ExceptionHandler():
     def std_handler(self, error):  # pylint: disable=no-self-use
         """Handle standard exception."""
         message = dict(messaage=error.message if hasattr(error, 'message') else error.description)
-        logger.exception(error)
+        if isinstance(error, HTTPException):
+            logger.error(error)
+        else:
+            logger.exception(error)
         return message, error.code if isinstance(error, HTTPException) else 500, RESPONSE_HEADERS
 
     def init_app(self, app):
