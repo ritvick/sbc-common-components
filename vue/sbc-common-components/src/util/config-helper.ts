@@ -20,18 +20,15 @@ export default class ConfigHelper {
   }
 
   static getStatusAPIUrl (): string {
-    const apiConfig = JSON.parse(sessionStorage.getItem(SessionStorageKeys.ApiConfigKey) || '{}')
-    return trimTrailingSlashURL(apiConfig ? apiConfig['VUE_APP_STATUS_ROOT_API'] : '')
+    return trimTrailingSlashURL(sessionStorage.getItem(SessionStorageKeys.StatusApiUrl) || '')
   }
 
   static getAuthAPIUrl (): string {
-    const apiConfig = JSON.parse(sessionStorage.getItem(SessionStorageKeys.ApiConfigKey) || '{}')
-    return trimTrailingSlashURL((apiConfig && apiConfig['VUE_APP_AUTH_ROOT_API']) || sessionStorage.getItem(SessionStorageKeys.AuthApiUrl) || '')
+    return trimTrailingSlashURL(sessionStorage.getItem(SessionStorageKeys.AuthApiUrl) || '')
   }
 
   static getAuthContextPath (): string {
-    const apiConfig = JSON.parse(sessionStorage.getItem(SessionStorageKeys.ApiConfigKey) || '{}')
-    return trimTrailingSlashURL((apiConfig && apiConfig['AUTH_URL']) || sessionStorage.getItem('AUTH_URL') || '')
+    return trimTrailingSlashURL(sessionStorage.getItem(SessionStorageKeys.AuthWebUrl) || '')
   }
 
   static setKeycloakConfigUrl (keycloakConfigUrl: string) {

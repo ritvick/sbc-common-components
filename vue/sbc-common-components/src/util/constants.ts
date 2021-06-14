@@ -7,6 +7,8 @@ export enum SessionStorageKeys {
   LaunchDarklyFlags = 'LD_FLAGS',
   CurrentAccount = 'CURRENT_ACCOUNT',
   AuthApiUrl = 'AUTH_API_URL',
+  AuthWebUrl = 'AUTH_WEB_URL',
+  StatusApiUrl = 'STATUS_API_URL',
   SessionSynced = 'SESSION_SYNCED'
 }
 
