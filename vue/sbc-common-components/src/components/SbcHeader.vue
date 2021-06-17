@@ -262,7 +262,7 @@
                 <v-list
                   tile
                   dense
-                  v-if="!isBceid">
+                  v-if="canCreateAccount">
                   <v-list-item @click="goToCreateBCSCAccount()">
                     <v-list-item-icon left>
                       <v-icon>mdi-plus</v-icon>
@@ -410,6 +410,11 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
 
   get isBceid (): boolean {
     return this.currentLoginSource === LoginSource.BCEID
+  }
+
+  get canCreateAccount (): boolean {
+    // bcros and bceid cant create extra account themselves
+    return [LoginSource.BCROS.valueOf(), LoginSource.BCEID.valueOf()].indexOf(this.currentLoginSource) < 0
   }
 
   get isBcscOrBceid (): boolean {
