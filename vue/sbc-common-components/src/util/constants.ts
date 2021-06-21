@@ -52,3 +52,5 @@ export enum Pages {
   ACCOUNT_FREEZ = 'account-freeze',
   PENDING_APPROVAL = 'pendingapproval'
 }
+
+export const ALLOWED_URIS_FOR_PENDING_ORGS: string[] = ['setup-non-bcsc-account']
