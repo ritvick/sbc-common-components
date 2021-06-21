@@ -489,7 +489,7 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
       const targetPath = window.location.pathname
       const substringCheck = (element:string) => targetPath.indexOf(element) > -1
       // check if any of the url is the allowed uri
-      let isAllowedUrl = ALLOWED_URIS_FOR_PENDING_ORGS.findIndex(substringCheck) > -1
+      const isAllowedUrl = ALLOWED_URIS_FOR_PENDING_ORGS.findIndex(substringCheck) > -1
       if (!isAllowedUrl) {
         const accountName = encodeURIComponent(btoa(this.accountName))
         this.redirectToPath(this.inAuth, `${Pages.PENDING_APPROVAL}/${accountName}/true`)
