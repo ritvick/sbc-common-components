@@ -298,7 +298,7 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { initialize, LDClient } from 'launchdarkly-js-client-sdk'
-import { SessionStorageKeys, Account, IdpHint, LoginSource, Pages, Role } from '../util/constants'
+import { ALLOWED_URIS_FOR_PENDING_ORGS, Account, IdpHint, LoginSource, Pages, Role } from '../util/constants'
 import ConfigHelper from '../util/config-helper'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { UserSettings } from '../models/userSettings'
@@ -486,8 +486,14 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
     if ([AccountStatus.NSF_SUSPENDED, AccountStatus.SUSPENDED].some(status => status === this.currentAccount?.accountStatus)) {
       this.redirectToPath(this.inAuth, `${Pages.ACCOUNT_FREEZ}`)
     } else if (this.currentAccount?.accountStatus === AccountStatus.PENDING_STAFF_REVIEW) {
-      const accountName = encodeURIComponent(btoa(this.accountName))
-      this.redirectToPath(this.inAuth, `${Pages.PENDING_APPROVAL}/${accountName}/true`)
+      const targetPath = window.location.pathname
+      const substringCheck = (element:string) => targetPath.indexOf(element) > -1
+      // check if any of the url is the allowed uri
+      const isAllowedUrl = ALLOWED_URIS_FOR_PENDING_ORGS.findIndex(substringCheck) > -1
+      if (!isAllowedUrl) {
+        const accountName = encodeURIComponent(btoa(this.accountName))
+        this.redirectToPath(this.inAuth, `${Pages.PENDING_APPROVAL}/${accountName}/true`)
+      }
     }
   }
 
