@@ -165,10 +165,10 @@ class KeyCloakService {
     return isAuthorized
   }
 
-  async initializeToken (store?: Store<any>, isScheduleRefresh: boolean = true) {
+  async initializeToken (store?: Store<any>, isScheduleRefresh: boolean = true, forceLogin: boolean = false) {
     this.store = store
     const kcOptions: KeycloakInitOptions = {
-      onLoad: 'check-sso',
+      onLoad: forceLogin ? 'login-required' : 'check-sso',
       checkLoginIframe: false,
       timeSkew: 0,
       token: ConfigHelper.getFromSession(SessionStorageKeys.KeyCloakToken) || undefined,
