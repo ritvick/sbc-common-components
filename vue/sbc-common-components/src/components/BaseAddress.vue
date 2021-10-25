@@ -41,6 +41,7 @@
                         :name="Math.random()"
                         filled
                         class="street-address"
+                        :hint="streetAddressHint"
                         :id="streetAddressId"
                         :label="streetAddressLabel"
                         v-model="addressLocal.streetAddress"
@@ -173,6 +174,9 @@ export default class BaseAddress extends Mixins(ValidationMixin, CountriesProvin
   @Prop({ default: null })
   readonly schema: any
 
+  @Prop({ default: false })
+  readonly noPoBox: boolean
+
   /** A local (working) copy of the address, to contain the fields edited by the component (ie, the model). */
   private addressLocal: object = {}
 
@@ -250,6 +254,10 @@ export default class BaseAddress extends Mixins(ValidationMixin, CountriesProvin
   /** The Delivery Instructions label with 'optional' as needed. */
   private get deliveryInstructionsLabel (): string {
     return 'Delivery Instructions' + (this.isSchemaRequired('deliveryInstructions') ? '' : ' (Optional)')
+  }
+
+  private get streetAddressHint (): string {
+    return this.noPoBox ? "Address cannot be a PO Box" : ""
   }
 
   /** Whether the specified prop is required according to the schema. */
