@@ -258,7 +258,7 @@ export default class BaseAddress extends Mixins(ValidationMixin, CountriesProvin
   }
 
   private get streetAddressHint (): string {
-    return this.noPoBox ? "Address cannot be a PO Box" : ""
+    return this.noPoBox ? 'Address cannot be a PO Box' : ''
   }
 
   /** Whether the specified prop is required according to the schema. */

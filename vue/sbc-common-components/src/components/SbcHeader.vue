@@ -292,6 +292,9 @@
     <div id="warning-bar">
       <browser-version-alert />
     </div>
+    <div id="warning-modal">
+      <mobile-device-alert />
+    </div>
   </div>
 </template>
 
@@ -311,6 +314,7 @@ import { KCUserProfile } from '../models/KCUserProfile'
 import keycloakService from '../services/keycloak.services'
 import LaunchDarklyService from '../services/launchdarkly.services'
 import BrowserVersionAlert from './BrowserVersionAlert.vue'
+import MobileDeviceAlert from './MobileDeviceAlert.vue'
 import SbcProductSelector from './SbcProductSelector.vue'
 import { AccountStatus } from '../util/enums'
 
@@ -349,7 +353,8 @@ declare module 'vuex' {
   },
   components: {
     SbcProductSelector,
-    BrowserVersionAlert
+    BrowserVersionAlert,
+    MobileDeviceAlert
   }
 })
 export default class SbcHeader extends Mixins(NavigationMixin) {
