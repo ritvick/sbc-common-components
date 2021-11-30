@@ -1,85 +1,85 @@
 <template>
-  <sbc-system-banner
-    :show="browserSupported === false"
-    type="warning"
-    :message="alertMessage"
-  ></sbc-system-banner>
+  <v-overlay v-model="browserUnSupported" color="white">
+    <v-dialog v-model="browserUnSupported" max-width="720px" persistent>
+      <v-card>
+        <v-card-title>
+          <div>Unspported Browser </div>
+        </v-card-title>
+        <v-card-text>
+          <p>
+            Internet Explorer 11 is not longer supported as it is coming to end-of-support by Microsoft starting on June 15, 2022.
+            Download one of following browsers for best experience.
+            <a href="https://docs.microsoft.com/en-us/lifecycle/announcements/internet-explorer-11-end-of-support" target="_blank">
+              Learn more <v-icon class="text-decoration: none" color="primary" x-small>mdi-open-in-new</v-icon>
+            </a>
+          </p>
+        </v-card-text>
+        <v-divider vertical></v-divider>
+        <v-row justify="space-around">
+          <a href="https://www.microsoft.com/en-us/edge" target="_blank">
+            <v-col>
+              <v-card class="elevation-0">
+                <v-card-title>
+                   <v-img src="../assets/img/edge.png" max-height="60" max-width="60"></v-img>
+                </v-card-title>
+                <v-card-text>
+                  Microsoft Edge
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </a>
+          <a href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">
+            <v-col>
+              <v-card class="elevation-0">
+                <v-card-title>
+                  <v-img src="../assets/img/chrome.png" max-height="60" max-width="60"></v-img>
+                </v-card-title>
+                <v-card-text>
+                  Google Chrome
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </a>
+          <a href="https://www.mozilla.org/en-CA/firefox/new/" target="_blank">
+            <v-col>
+              <v-card class="elevation-0">
+                <v-card-title>
+                  <v-img src="../assets/img/firefox.png" max-height="60" max-width="60"></v-img>
+                </v-card-title>
+                <v-card-text>
+                  Mozilla Firefox
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </a>
+          <a href="https://support.apple.com/downloads/safari" target="_blank">
+            <v-col>
+              <v-card class="elevation-0">
+                <v-card-title>
+                  <v-img src="../assets/img/safari.png" max-height="60" max-width="60"></v-img>
+                </v-card-title>
+                <v-card-text>
+                  Apple Safari
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </a>
+        </v-row>
+      </v-card>
+    </v-dialog>
+  </v-overlay>
 </template>
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import SbcSystemBanner from './SbcSystemBanner.vue'
-
-@Component({
-  components: {
-    SbcSystemBanner
-  }
-})
+@Component({})
 export default class BrowserVersionAlert extends Vue {
-  @Prop({ default: `This website will not work properly in your current browser. We recommend viewing this website
-  in a newer browser. BC Registries and Online Services websites work better when viewed in the latest versions of
-  most popular new browsers.` })
-  readonly alertMessage: string
-
-  @Prop({ default: true })
-  browserSupported: boolean
-
-  private getBrowser (): { name: string; version: number } {
-    let ua = navigator.userAgent
-    let tem: string[]
-    let M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []
-
-    if (/trident/i.test(M[1])) {
-      tem = /\brv[ :]+(\d+)/g.exec(ua) || []
-      return { name: 'IE', version: parseInt(tem[1] || '') }
-    }
-    if (M[1] === 'Chrome') {
-      tem = ua.match(/\bOPR\/(\d+)/)
-      if (tem != null) { return { name: 'Opera', version: parseInt(tem[1]) } }
-    }
-
-    // MS Edge Html
-    if (window.navigator.userAgent.indexOf('Edge') > -1) {
-      // eslint-disable-next-line no-useless-escape
-      tem = ua.match(/\Edge\/(\d+)/)
-
-      if (tem != null) {
-        return { name: 'Edge', version: parseInt(tem[1]) }
-      }
-    }
-
-    // MS Edge Chromium
-    if (window.navigator.userAgent.indexOf('Edg') > -1) {
-      // eslint-disable-next-line no-useless-escape
-      tem = ua.match(/\Edg\/(\d+)/)
-
-      if (tem != null) {
-        return { name: 'Edge', version: parseInt(tem[1]) }
-      }
-    }
-
-    M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?']
-
-    if ((tem = ua.match(/version\/(\d+)/i)) != null) {
-      M.splice(1, 1, tem[1])
-    }
-    return {
-      name: M[0],
-      version: +M[1]
-    }
+  private browserUnSupported: boolean = false
+  private isIE () {
+    return (window.navigator.userAgent.match(/MSIE|Trident/) !== null)
   }
-
-  private isSupported (browser: { name: string; version: number }): boolean {
-    let supported: boolean = true
-
-    if ((browser.name === 'MSIE' || browser.name === 'IE') && browser.version <= 11) {
-      supported = false
-    }
-    return supported
-  }
-
   private async mounted () {
-    this.browserSupported = this.isSupported(this.getBrowser())
+    this.browserUnSupported = this.isIE()
   }
 }
 </script>
