@@ -13,3 +13,7 @@ export enum AccountStatus {
   NSF_SUSPENDED = 'NSF_SUSPENDED',
   SUSPENDED = 'SUSPENDED'
 }
+
+export enum LDFlags {
+  WhatsNew = 'whats-new',
+}

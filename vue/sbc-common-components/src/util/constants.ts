@@ -9,6 +9,7 @@ export enum SessionStorageKeys {
   AuthApiUrl = 'AUTH_API_URL',
   AuthWebUrl = 'AUTH_WEB_URL',
   StatusApiUrl = 'STATUS_API_URL',
+  WhatsNew = 'WHATS_NEW',
   SessionSynced = 'SESSION_SYNCED'
 }
 
