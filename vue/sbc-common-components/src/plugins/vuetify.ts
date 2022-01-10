@@ -54,8 +54,10 @@ export default new Vuetify({
         },
         bcgovgold: {
           base: '#fcba19'
-        }
+        },
+        appNotificationOrange: '#FCBA19'
       }
+
     }
   }
 })

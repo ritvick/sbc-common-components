@@ -36,13 +36,11 @@
               overlap
               offset-y="-5"
               offset-x="10"
-              color="notificationUnreadPriorityCount > 0 ? error : blue"
+              :color="notificationUnreadPriorityCount > 0 ? 'error' : 'blue'"
               v-if="notificationUnreadCount > 0"
             >
             </v-badge>
-            <span>
-              What's New
-            </span>
+            What's New
           </v-btn>
 
           <!-- Login Menu -->
@@ -616,12 +614,13 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/scss/layout.scss";
 @import "../assets/scss/theme.scss";
 
 $app-header-font-color: #ffffff;
 
 .app-header {
-  height: 70px;
+  height: $app-header-height;
   color: $app-header-font-color;
   border-bottom: 2px solid $BCgovGold5;
   background-color: $BCgovBlue5;
@@ -646,7 +645,7 @@ $app-header-font-color: #ffffff;
 .brand__image {
   display: block;
   margin-right: 1.25rem;
-  max-height: 70px;
+  max-height: $app-header-height;
 }
 
 .brand__title {

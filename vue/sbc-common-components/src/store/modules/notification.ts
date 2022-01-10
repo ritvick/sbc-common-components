@@ -39,7 +39,6 @@ export default class NotificationModule extends VuexModule {
   public async syncNotifications (): Promise<Notifications> {
     const response = await NotificationService.getNotifications()
     if (response && response.data) {
-      console.log('notification', response.data)
       return response.data?.sort(function (a, b) {
         var res = (+b.priority) - (+a.priority)
         if (res === 0) {
@@ -70,7 +69,6 @@ export default class NotificationModule extends VuexModule {
   public async markAsRead (): Promise<Notifications> {
     let nl = JSON.parse(ConfigHelper.getFromSession(SessionStorageKeys.WhatsNew) || '{}')
     nl.map(notification => { notification.read = true; return notification })
-    console.log('markAsRead: ' + nl)
     this.context.commit('setNotifications', nl)
     return nl.filter(notification => !notification.read).length
   }

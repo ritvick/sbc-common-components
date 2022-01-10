@@ -8,7 +8,6 @@ const axios = addAxiosInterceptors(Axios.create())
 
 export default class NotificationService {
   static async getNotifications (): Promise<AxiosResponse<Notifications>> {
-    console.log('getNotifications')
     return axios.get(`${ConfigHelper.getStatusAPIUrl()}/whatsnew`)
   }
 }

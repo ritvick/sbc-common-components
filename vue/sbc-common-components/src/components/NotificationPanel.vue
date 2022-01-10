@@ -8,12 +8,10 @@
       right
       app
       :width="440"
-      style="top: 70px; max-height: calc(100% - 0);"
     >
       <v-app-bar
         flat
         outlined
-        color="#FCBA19"
       >
         <v-toolbar-title class="toolbar-title">What's New at BC Registries</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -103,8 +101,13 @@ export default class NotificationPanel extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/scss/layout.scss";
 @import "../assets/scss/theme.scss";
 
+//$app-notification-height: calc(100vh - $app-header-height);
+//$app-notification-item-height: $app-notification-height/3;
+
+//@debug $app-notification-item-height;
 ::v-deep ::-webkit-scrollbar {
   width: 2px;
 }
@@ -114,9 +117,13 @@ export default class NotificationPanel extends Vue {
   border-radius: 20px;
 }
 
-.navigation-drawer {
-  top: 100px;
-  max-height: calc(100% - 0%);
+::v-deep .v-navigation-drawer--right {
+  transform: translatey($app-header-height) !important;
+  height: 100vh;
+}
+
+.v-app-bar.v-toolbar.v-sheet {
+  background-color: $app-notification-orange !important;
 }
 
 .dialog-close {
@@ -129,7 +136,7 @@ export default class NotificationPanel extends Vue {
 }
 
 ::v-deep .v-btn:not(.dialog-close) .v-icon.v-icon {
-  font-size: 1.25rem !important;
+  font-size: $px-18 !important;
 }
 
 ::v-deep .v-btn__content {
@@ -138,25 +145,19 @@ export default class NotificationPanel extends Vue {
 
 .toolbar-title {
   color: $BCgovBlue5;
-  font-size: 1.125rem;
+  font-size: $px-18;
   font-weight: 700;
 }
 
 .list-subtitle {
-  font-size: 1.125rem;
+  font-size: $px-18;
   font-weight: 700;
-}
-
-.list-text {
-  line-height: 1;
-  word-spacing: .05em;
-  letter-spacing: .01em;
 }
 
 .dot-red {
   height: 8px;
   width: 8px;
-  background-color: #F44336;
+  background-color: $app-notification-red !important;
   border-radius: 50%;
   display: inline-block;
   margin-top: 18px;
@@ -164,12 +165,7 @@ export default class NotificationPanel extends Vue {
 }
 
 .dot-blue {
-  height: 8px;
-  width: 8px;
-  background-color: #2196F3;
-  border-radius: 50%;
-  display: inline-block;
-  margin-top: 18px;
-  margin-left: 10px;
+  @extend .dot-red;
+  background-color: $app-notification-blue !important;
 }
 </style>
