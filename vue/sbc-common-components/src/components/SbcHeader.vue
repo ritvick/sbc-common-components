@@ -487,6 +487,7 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
       await this.checkAccountStatus()
     }
 
+    // fetching what's new information, need to wait the notifications load and get the counts
     await this.syncNotifications()
     await this.fetchNotificationCount()
     await this.fetchNotificationUnreadPriorityCount()
