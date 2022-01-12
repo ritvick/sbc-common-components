@@ -20,6 +20,29 @@
           <!-- Product Selector -->
           <sbc-product-selector v-if="showProductSelector" />
 
+          <!-- What's New -->
+          <v-btn
+            text
+            dark
+            large
+            width="150"
+            aria-label="whatsnew"
+            attach="#appHeader"
+            @click.stop="notificationPanel=true"
+            v-if="!isAuthenticated && notificationCount > 0 && isWhatsNewOpen"
+          >
+            <v-badge
+              dot
+              overlap
+              offset-y="-5"
+              offset-x="10"
+              :color="notificationUnreadPriorityCount > 0 ? 'error' : 'blue'"
+              v-if="notificationUnreadCount > 0"
+            >
+            </v-badge>
+            What's New
+          </v-btn>
+
           <!-- Login Menu -->
           <v-menu
             fixed
@@ -295,6 +318,9 @@
     <div id="warning-modal">
       <mobile-device-alert />
     </div>
+    <div class="position: relative">
+      <notification-panel :showNotifications="notificationPanel" @closeNotifications="closeNotificationPanel()" />
+    </div>
   </div>
 </template>
 
@@ -316,7 +342,9 @@ import LaunchDarklyService from '../services/launchdarkly.services'
 import BrowserVersionAlert from './BrowserVersionAlert.vue'
 import MobileDeviceAlert from './MobileDeviceAlert.vue'
 import SbcProductSelector from './SbcProductSelector.vue'
-import { AccountStatus } from '../util/enums'
+import NotificationPanel from './NotificationPanel.vue'
+import { AccountStatus, LDFlags } from '../util/enums'
+import NotificationModule from '../store/modules/notification'
 
 declare module 'vuex' {
   interface Store<S> {
@@ -339,22 +367,32 @@ declare module 'vuex' {
     if (!this.$store.isModuleRegistered(['auth'])) {
       this.$store.registerModule('auth', AuthModule)
     }
+    if (!this.$store.isModuleRegistered(['notification'])) {
+      this.$store.registerModule('notification', NotificationModule)
+    }
     this.$options.computed = {
       ...(this.$options.computed || {}),
       ...mapState('account', ['currentAccount', 'pendingApprovalCount', 'currentUser']),
+      ...mapState('notification', ['notificationCount', 'notificationUnreadPriorityCount', 'notificationUnreadCount']),
       ...mapGetters('account', ['accountName', 'switchableAccounts', 'username']),
       ...mapGetters('auth', ['isAuthenticated', 'currentLoginSource'])
     }
     this.$options.methods = {
       ...(this.$options.methods || {}),
       ...mapActions('account', ['loadUserInfo', 'syncAccount', 'syncCurrentAccount', 'syncUserProfile']),
-      ...mapActions('auth', ['syncWithSessionStorage'])
+      ...mapActions('auth', ['syncWithSessionStorage']),
+      ...mapActions('notification', ['markAsRead',
+        'fetchNotificationCount',
+        'fetchNotificationUnreadPriorityCount',
+        'fetchNotificationUnreadCount',
+        'syncNotifications'])
     }
   },
   components: {
     SbcProductSelector,
     BrowserVersionAlert,
-    MobileDeviceAlert
+    MobileDeviceAlert,
+    NotificationPanel
   }
 })
 export default class SbcHeader extends Mixins(NavigationMixin) {
@@ -372,6 +410,15 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
   private readonly syncUserProfile!: () => Promise<void>
   private readonly syncWithSessionStorage!: () => void
   private readonly currentUser!: any
+  private notificationPanel = false
+  private readonly notificationUnreadPriorityCount!: number
+  private readonly notificationUnreadCount!: number
+  private readonly fetchNotificationUnreadPriorityCount!: () => Promise<void>
+  private readonly fetchNotificationUnreadCount!: () => Promise<void>
+  private readonly markAsRead!: () => Promise<void>
+  private readonly notificationCount!: number
+  private readonly fetchNotificationCount!: () => Promise<void>
+  private readonly syncNotifications!: () => Promise<void>
 
   @Prop({ default: '' }) redirectOnLoginSuccess!: string;
   @Prop({ default: '' }) redirectOnLoginFail!: string;
@@ -429,6 +476,8 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
   private async mounted () {
     getModule(AccountModule, this.$store)
     getModule(AuthModule, this.$store)
+    getModule(NotificationModule, this.$store)
+
     this.syncWithSessionStorage()
     if (this.isAuthenticated) {
       await this.loadUserInfo()
@@ -437,6 +486,12 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
       // checking for account status
       await this.checkAccountStatus()
     }
+
+    // fetching what's new information, need to wait the notifications load and get the counts
+    await this.syncNotifications()
+    await this.fetchNotificationCount()
+    await this.fetchNotificationUnreadPriorityCount()
+    await this.fetchNotificationUnreadCount()
   }
 
   @Watch('isAuthenticated')
@@ -545,16 +600,28 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
     baseUrl += (baseUrl.length && baseUrl[baseUrl.length - 1] !== '/') ? '/' : ''
     return baseUrl
   }
+
+  private async closeNotificationPanel () {
+    this.notificationPanel = false
+    if (this.notificationUnreadCount > 0) {
+      await this.markAsRead()
+    }
+  }
+
+  private get isWhatsNewOpen (): boolean {
+    return LaunchDarklyService.getFlag(LDFlags.WhatsNew) || false
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/scss/layout.scss";
 @import "../assets/scss/theme.scss";
 
 $app-header-font-color: #ffffff;
 
 .app-header {
-  height: 70px;
+  height: $app-header-height;
   color: $app-header-font-color;
   border-bottom: 2px solid $BCgovGold5;
   background-color: $BCgovBlue5;
@@ -579,7 +646,7 @@ $app-header-font-color: #ffffff;
 .brand__image {
   display: block;
   margin-right: 1.25rem;
-  max-height: 70px;
+  max-height: $app-header-height;
 }
 
 .brand__title {
@@ -721,6 +788,12 @@ $app-header-font-color: #ffffff;
     }
   }
 
+  .v-btn.whatsnew-btn {
+    .v-icon + span,
+    span + .v-icon {
+      display: none;
+    }
+  }
   .menu-header {
     display: block;
   }

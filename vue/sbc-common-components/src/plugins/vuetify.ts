@@ -56,6 +56,7 @@ export default new Vuetify({
           base: '#fcba19'
         }
       }
+
     }
   }
 })
