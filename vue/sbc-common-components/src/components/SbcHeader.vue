@@ -258,7 +258,7 @@
               <v-divider></v-divider>
 
               <!-- Switch Account -->
-              <div v-if="!isStaff && !isGovmUser">
+              <div v-if="!isStaff ">
                 <v-list
                   tile
                   dense
@@ -465,8 +465,8 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
   }
 
   get canCreateAccount (): boolean {
-    // bcros and bceid cant create extra account themselves
-    return [LoginSource.BCROS.valueOf(), LoginSource.BCEID.valueOf()].indexOf(this.currentLoginSource) < 0
+    // bcros  and idir can't create extra accounts themselves
+    return [LoginSource.BCROS.valueOf(), LoginSource.IDIR.valueOf()].indexOf(this.currentLoginSource) < 0
   }
 
   get isBcscOrBceid (): boolean {
