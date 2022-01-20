@@ -30,12 +30,12 @@ import { LDClient } from 'launchdarkly-js-client-sdk'
 import { IdpHint, LoginSource, Pages } from '../util/constants'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { UserSettings } from '../models/userSettings'
-import Vue from 'vue'
 import NavigationMixin from '../mixins/navigation-mixin'
 import { getModule } from 'vuex-module-decorators'
 import AccountModule from '../store/modules/account'
 import AuthModule from '../store/modules/auth'
 import { KCUserProfile } from '../models/KCUserProfile'
+import KeyCloakService from '../services/keycloak.services'
 
 declare module 'vuex' {
   interface Store<S> {
@@ -84,6 +84,7 @@ export default class SbcAuthMenu extends Mixins(NavigationMixin) {
   @Prop({ default: '' }) redirectOnLoginSuccess!: string;
   @Prop({ default: '' }) redirectOnLoginFail!: string;
   @Prop({ default: false }) inAuth!: boolean;
+  @Prop({ default: false }) fromLogin!: boolean;
 
   private readonly loginOptions = [
     {
@@ -154,13 +155,65 @@ export default class SbcAuthMenu extends Mixins(NavigationMixin) {
     }
   }
 
-  login (idpHint) {
-    if (this.redirectOnLoginSuccess) {
-      let url = encodeURIComponent(this.redirectOnLoginSuccess)
-      url += this.redirectOnLoginFail ? `/${encodeURIComponent(this.redirectOnLoginFail)}` : ''
-      window.location.assign(`${this.getContextPath()}signin/${idpHint}/${url}`)
+  // login (idpHint) {
+  //
+  // }
+  login (idpHint: string) {
+    if (!this.fromLogin) {
+      if (this.redirectOnLoginSuccess) {
+        let url = encodeURIComponent(this.redirectOnLoginSuccess)
+        url += this.redirectOnLoginFail ? `/${encodeURIComponent(this.redirectOnLoginFail)}` : ''
+        window.location.assign(`${this.getContextPath()}signin/${idpHint}/${url}`)
+      } else {
+        window.location.assign(`${this.getContextPath()}signin/${idpHint}`)
+      }
     } else {
-      window.location.assign(`${this.getContextPath()}signin/${idpHint}`)
+      // Initialize keycloak session
+      const kcInit = KeyCloakService.initializeKeyCloak(idpHint, this.$store)
+      kcInit.then(async (authenticated: boolean) => {
+        if (authenticated) {
+          // eslint-disable-next-line no-console
+          console.info('[SignIn.vue]Logged in User. Init Session and Starting refreshTimer')
+          // Set values to session storage
+          await KeyCloakService.initSession()
+          // tell KeycloakServices to load the user info
+          const userInfo = await this.loadUserInfo()
+
+          // update user profile
+          await this.updateUserProfile()
+
+          // sync the account if there is one
+          await this.syncAccount()
+
+          // if not from the sbc-auth, do the checks and redirect to sbc-auth
+          if (!this.inAuth) {
+            console.log('[SignIn.vue]Not from sbc-auth. Checking account status')
+            // redirect to create account page if the user has no 'account holder' role
+            const isRedirectToCreateAccount = (userInfo.roles.includes(Role.PublicUser) && !userInfo.roles.includes(Role.AccountHolder))
+
+            const currentUser = await this.getCurrentUserProfile(this.inAuth)
+
+            if ((userInfo?.loginSource !== LoginSource.IDIR) && !(currentUser?.userTerms?.isTermsOfUseAccepted)) {
+              console.log('[SignIn.vue]Redirecting. TOS not accepted')
+              this.redirectToPath(this.inAuth, Pages.USER_PROFILE_TERMS)
+            } else if (isRedirectToCreateAccount) {
+              console.log('[SignIn.vue]Redirecting. No Valid Role')
+              switch (userInfo.loginSource) {
+                case LoginSource.BCSC:
+                  this.redirectToPath(this.inAuth, Pages.CREATE_ACCOUNT)
+                  break
+                case LoginSource.BCEID:
+                  this.redirectToPath(this.inAuth, Pages.CHOOSE_AUTH_METHOD)
+                  break
+              }
+            }
+          }
+        }
+      }).catch(() => {
+        if (this.redirectOnLoginFail) {
+          window.location.assign(decodeURIComponent(this.redirectOnLoginFail))
+        }
+      })
     }
   }
 

@@ -101,7 +101,6 @@ export default class NotificationPanel extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/scss/layout.scss";
 @import "../assets/scss/theme.scss";
 
 //$app-notification-height: calc(100vh - $app-header-height);
