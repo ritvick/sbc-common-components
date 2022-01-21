@@ -27,7 +27,7 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { LDClient } from 'launchdarkly-js-client-sdk'
-import { IdpHint, LoginSource, Pages } from '../util/constants'
+import { Role, IdpHint, LoginSource, Pages } from '../util/constants'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { UserSettings } from '../models/userSettings'
 import NavigationMixin from '../mixins/navigation-mixin'
@@ -64,7 +64,13 @@ declare module 'vuex' {
     }
     this.$options.methods = {
       ...(this.$options.methods || {}),
-      ...mapActions('account', ['loadUserInfo', 'syncAccount', 'syncCurrentAccount', 'syncUserProfile']),
+      ...mapActions('account', [
+        'loadUserInfo',
+        'syncAccount',
+        'syncCurrentAccount',
+        'syncUserProfile',
+        'getCurrentUserProfile',
+        'updateUserProfile']),
       ...mapActions('auth', ['syncWithSessionStorage'])
     }
   }
@@ -80,6 +86,8 @@ export default class SbcAuthMenu extends Mixins(NavigationMixin) {
   // private readonly syncCurrentAccount!: (userSettings: UserSettings) => Promise<UserSettings>
   private readonly syncUserProfile!: () => Promise<void>
   private readonly syncWithSessionStorage!: () => void
+  private readonly getCurrentUserProfile!: (isAuth: boolean) => Promise<any>
+  private readonly updateUserProfile!: () => Promise<void>
 
   @Prop({ default: '' }) redirectOnLoginSuccess!: string;
   @Prop({ default: '' }) redirectOnLoginFail!: string;
