@@ -155,9 +155,6 @@ export default class SbcAuthMenu extends Mixins(NavigationMixin) {
     }
   }
 
-  // login (idpHint) {
-  //
-  // }
   login (idpHint: string) {
     if (!this.fromLogin) {
       if (this.redirectOnLoginSuccess) {
