@@ -56,7 +56,7 @@ export default class NotificationModule extends VuexModule {
   }
 
   @Action({ rawError: true, commit: 'setNotificationUnreadPriorityCount' })
-  public async fetchNotificationPriorityCount (): Promise<number> {
+  public async fetchNotificationUnreadPriorityCount (): Promise<number> {
     return this.notifications.filter(notification => notification.priority && !notification.read).length
   }
 
