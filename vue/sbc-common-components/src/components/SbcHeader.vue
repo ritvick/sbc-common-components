@@ -51,7 +51,7 @@
             width="330"
             transition="slide-y-transition"
             attach="#appHeader"
-            v-if="!isAuthenticated && !showLoginActions"
+            v-if="!isAuthenticated && showLoginMenu"
           >
             <template v-slot:activator="{ on }">
               <v-btn
@@ -426,7 +426,7 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
   @Prop({ default: false }) inAuth!: boolean;
   @Prop({ default: false }) showProductSelector!: boolean;
   @Prop({ default: true }) showActions!: boolean;
-  @Prop({ default: true }) showLoginActions!: boolean;
+  @Prop({ default: true }) showLoginMenu!: boolean;
   @Prop({ default: '' }) dashboardReturnUrl !: string;
 
   private readonly loginOptions = [
