@@ -345,6 +345,7 @@ import SbcProductSelector from './SbcProductSelector.vue'
 import NotificationPanel from './NotificationPanel.vue'
 import { AccountStatus, LDFlags } from '../util/enums'
 import NotificationModule from '../store/modules/notification'
+import { getAccountIdFromCurrentUrl, removeAccountIdFromUrl, appendAccountId } from '../util/common-util'
 
 declare module 'vuex' {
   interface Store<S> {
@@ -497,6 +498,12 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
     await this.fetchNotificationCount()
     await this.fetchNotificationUnreadPriorityCount()
     await this.fetchNotificationUnreadCount()
+
+    // remove id from URLsince its already stored in session
+    if (getAccountIdFromCurrentUrl()) {
+      await Vue.nextTick()
+      window.history.replaceState({}, document.title, removeAccountIdFromUrl(window.location.href))
+    }
   }
 
   @Watch('isAuthenticated')
@@ -577,7 +584,7 @@ export default class SbcHeader extends Mixins(NavigationMixin) {
     this.$emit('account-switch-completed')
 
     if (!inAuth) {
-      window.location.assign(`${ConfigHelper.getAuthContextPath()}/${Pages.HOME}`)
+      window.location.assign(appendAccountId(`${ConfigHelper.getAuthContextPath()}/${Pages.HOME}`))
     }
   }
 
