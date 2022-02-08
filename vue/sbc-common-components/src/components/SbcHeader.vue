@@ -259,24 +259,35 @@
 
               <!-- Switch Account -->
               <div v-if="!isStaff ">
+                <v-subheader v-if="switchableAccounts.length > 1">SWITCH ACCOUNT</v-subheader>
                 <v-list
                   tile
                   dense
                   v-if="switchableAccounts.length > 1"
+                  class="switch-account"
                 >
-                  <v-subheader>SWITCH ACCOUNT</v-subheader>
+
                   <v-list-item
                     color="primary"
                     :class="{'v-list-item--active' : settings.id === currentAccount.id}"
                     v-for="(settings, id) in switchableAccounts"
                     :key="id"
                     @click="switchAccount(settings, inAuth)"
+                    :two-line="settings.additionalLabel"
                   >
+
                     <v-list-item-icon left>
                       <v-icon v-show="settings.id === currentAccount.id">mdi-check</v-icon>
                     </v-list-item-icon>
+                    <v-list-item-content>
                     <v-list-item-title>{{ settings.label }}</v-list-item-title>
+                    <v-list-item-subtitle
+                    class="font-italic"
+                    :class="{'primary--text' : settings.id === currentAccount.id}"
+                    v-if="settings.additionalLabel">{{ `- ${settings.additionalLabel}` }}</v-list-item-subtitle>
+                    </v-list-item-content>
                   </v-list-item>
+
                 </v-list>
 
                 <v-divider></v-divider>
@@ -679,7 +690,11 @@ $app-header-font-color: #ffffff;
   font-size: 1.1875rem;
   font-weight: 700;
 }
+.switch-account{
+  height:42vh;
+  overflow-y: scroll;
 
+}
 @media (max-width: 900px) {
   .brand__image {
     margin-right: 0.75rem;
@@ -717,6 +732,10 @@ $app-header-font-color: #ffffff;
     margin-bottom: 0.01rem;
     font-size: 0.7rem;
     opacity: 0.75;
+    max-width: 15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
