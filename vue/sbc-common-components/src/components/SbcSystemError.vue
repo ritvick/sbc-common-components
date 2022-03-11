@@ -5,12 +5,12 @@
             <p v-html="cardDesc"></p>
             <p>
                 <v-icon small>phone</v-icon>
-                <a href="tel:+1-250-952-0568" class="error-dialog-padding">250 952-0568</a>
+                <a href="tel:+1-877-526-1526" class="error-dialog-padding">1-877-526-1526</a>
             </p>
             <p>
                 <v-icon small>email</v-icon>
-                <a href="mailto:SBC_ITOperationsSupport@gov.bc.ca" class="error-dialog-padding"
-                >SBC_ITOperationsSupport@gov.bc.ca</a>
+                <a href="mailto:BCRegistries@gov.bc.ca" class="error-dialog-padding"
+                >BCRegistries@gov.bc.ca</a>
             </p>
         </v-card-text>
         <v-divider></v-divider>
