@@ -15,8 +15,8 @@
           </template>
           <div v-html="aboutText"></div>
         </v-tooltip>
-        <span style="color: yellow;padding-top:3.5px;">
-          <i>sdfdsf A BC Online Application</i>
+        <span style="color: #FCBA19;padding-top:3.5px;">
+          <i>A BC Online Application</i>
         </span>
       </nav>
     </div>
