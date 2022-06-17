@@ -13,7 +13,8 @@ export enum SessionStorageKeys {
   SessionSynced = 'SESSION_SYNCED',
   RegistryHomeUrl = 'REGISTRY_HOME_URL',
   NameRequestUrl = 'NAME_REQUEST_URL',
-  PprWebUrl = 'PPR_WEB_URL'
+  PprWebUrl = 'PPR_WEB_URL',
+  SiteminderLogoutUrl = 'SITEMINDER_LOGOUT_URL'
 }
 
 export enum Account {
