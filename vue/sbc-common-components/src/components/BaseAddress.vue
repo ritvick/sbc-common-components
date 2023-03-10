@@ -227,7 +227,6 @@ export default class BaseAddress extends Mixins(ValidationMixin, CountriesProvin
     return this.addressLocal['addressCountry']
   }
 
-
   /** The Street Address Additional label with 'optional' as needed. */
   private get streetAddressAdditionalLabel (): string {
     return 'Additional Street Address' + (this.isSchemaRequired('streetAddressAdditional') ? '' : ' (Optional)')
